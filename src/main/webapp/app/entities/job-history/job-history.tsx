@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, TextFormat, getSortState } from 'react-jhipster';
+import { openFile, byteSize, Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE, SORT } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
+import { DurationFormat } from 'app/shared/DurationFormat';
 
 import { IJobHistory } from 'app/shared/model/job-history.model';
-import { getEntities, reset } from './job-history.reducer';
+import { getEntities } from './job-history.reducer';
 
 export const JobHistory = () => {
   const dispatch = useAppDispatch();
@@ -22,14 +22,10 @@ export const JobHistory = () => {
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getSortState(location, ITEMS_PER_PAGE, 'id'), location.search)
   );
-  const [sorting, setSorting] = useState(false);
 
   const jobHistoryList = useAppSelector(state => state.jobHistory.entities);
   const loading = useAppSelector(state => state.jobHistory.loading);
   const totalItems = useAppSelector(state => state.jobHistory.totalItems);
-  const links = useAppSelector(state => state.jobHistory.links);
-  const entity = useAppSelector(state => state.jobHistory.entity);
-  const updateSuccess = useAppSelector(state => state.jobHistory.updateSuccess);
 
   const getAllEntities = () => {
     dispatch(
@@ -41,58 +37,49 @@ export const JobHistory = () => {
     );
   };
 
-  const resetAll = () => {
-    dispatch(reset());
-    setPaginationState({
-      ...paginationState,
-      activePage: 1,
-    });
-    dispatch(getEntities({}));
+  const sortEntities = () => {
+    getAllEntities();
+    const endURL = `?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`;
+    if (location.search !== endURL) {
+      navigate(`${location.pathname}${endURL}`);
+    }
   };
 
   useEffect(() => {
-    resetAll();
-  }, []);
+    sortEntities();
+  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
 
   useEffect(() => {
-    if (updateSuccess) {
-      resetAll();
-    }
-  }, [updateSuccess]);
-
-  useEffect(() => {
-    getAllEntities();
-  }, [paginationState.activePage]);
-
-  const handleLoadMore = () => {
-    if ((window as any).pageYOffset > 0) {
+    const params = new URLSearchParams(location.search);
+    const page = params.get('page');
+    const sort = params.get(SORT);
+    if (page && sort) {
+      const sortSplit = sort.split(',');
       setPaginationState({
         ...paginationState,
-        activePage: paginationState.activePage + 1,
+        activePage: +page,
+        sort: sortSplit[0],
+        order: sortSplit[1],
       });
     }
-  };
-
-  useEffect(() => {
-    if (sorting) {
-      getAllEntities();
-      setSorting(false);
-    }
-  }, [sorting]);
+  }, [location.search]);
 
   const sort = p => () => {
-    dispatch(reset());
     setPaginationState({
       ...paginationState,
-      activePage: 1,
       order: paginationState.order === ASC ? DESC : ASC,
       sort: p,
     });
-    setSorting(true);
   };
 
+  const handlePagination = currentPage =>
+    setPaginationState({
+      ...paginationState,
+      activePage: currentPage,
+    });
+
   const handleSyncList = () => {
-    resetAll();
+    sortEntities();
   };
 
   return (
@@ -112,101 +99,142 @@ export const JobHistory = () => {
         </div>
       </h2>
       <div className="table-responsive">
-        <InfiniteScroll
-          dataLength={jobHistoryList ? jobHistoryList.length : 0}
-          next={handleLoadMore}
-          hasMore={paginationState.activePage - 1 < links.next}
-          loader={<div className="loader">Loading ...</div>}
-        >
-          {jobHistoryList && jobHistoryList.length > 0 ? (
-            <Table responsive>
-              <thead>
-                <tr>
-                  <th className="hand" onClick={sort('id')}>
-                    <Translate contentKey="demoJhReact973App.jobHistory.id">ID</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th className="hand" onClick={sort('startDate')}>
-                    <Translate contentKey="demoJhReact973App.jobHistory.startDate">Start Date</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th className="hand" onClick={sort('endDate')}>
-                    <Translate contentKey="demoJhReact973App.jobHistory.endDate">End Date</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th className="hand" onClick={sort('language')}>
-                    <Translate contentKey="demoJhReact973App.jobHistory.language">Language</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th>
-                    <Translate contentKey="demoJhReact973App.jobHistory.job">Job</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th>
-                    <Translate contentKey="demoJhReact973App.jobHistory.department">Department</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th>
-                    <Translate contentKey="demoJhReact973App.jobHistory.employee">Employee</Translate> <FontAwesomeIcon icon="sort" />
-                  </th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {jobHistoryList.map((jobHistory, i) => (
-                  <tr key={`entity-${i}`} data-cy="entityTable">
-                    <td>
-                      <Button tag={Link} to={`/job-history/${jobHistory.id}`} color="link" size="sm">
-                        {jobHistory.id}
-                      </Button>
-                    </td>
-                    <td>
-                      {jobHistory.startDate ? <TextFormat type="date" value={jobHistory.startDate} format={APP_DATE_FORMAT} /> : null}
-                    </td>
-                    <td>{jobHistory.endDate ? <TextFormat type="date" value={jobHistory.endDate} format={APP_DATE_FORMAT} /> : null}</td>
-                    <td>
-                      <Translate contentKey={`demoJhReact973App.Language.${jobHistory.language}`} />
-                    </td>
-                    <td>{jobHistory.job ? <Link to={`/job/${jobHistory.job.id}`}>{jobHistory.job.id}</Link> : ''}</td>
-                    <td>
-                      {jobHistory.department ? <Link to={`/department/${jobHistory.department.id}`}>{jobHistory.department.id}</Link> : ''}
-                    </td>
-                    <td>{jobHistory.employee ? <Link to={`/employee/${jobHistory.employee.id}`}>{jobHistory.employee.id}</Link> : ''}</td>
-                    <td className="text-end">
-                      <div className="btn-group flex-btn-group-container">
-                        <Button tag={Link} to={`/job-history/${jobHistory.id}`} color="info" size="sm" data-cy="entityDetailsButton">
-                          <FontAwesomeIcon icon="eye" />{' '}
-                          <span className="d-none d-md-inline">
-                            <Translate contentKey="entity.action.view">View</Translate>
-                          </span>
-                        </Button>
-                        <Button tag={Link} to={`/job-history/${jobHistory.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                          <FontAwesomeIcon icon="pencil-alt" />{' '}
-                          <span className="d-none d-md-inline">
-                            <Translate contentKey="entity.action.edit">Edit</Translate>
-                          </span>
-                        </Button>
-                        <Button
-                          tag={Link}
-                          to={`/job-history/${jobHistory.id}/delete`}
-                          color="danger"
-                          size="sm"
-                          data-cy="entityDeleteButton"
-                        >
-                          <FontAwesomeIcon icon="trash" />{' '}
-                          <span className="d-none d-md-inline">
-                            <Translate contentKey="entity.action.delete">Delete</Translate>
-                          </span>
-                        </Button>
+        {jobHistoryList && jobHistoryList.length > 0 ? (
+          <Table responsive>
+            <thead>
+              <tr>
+                <th className="hand" onClick={sort('id')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('startDate')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.startDate">Start Date</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('endDate')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.endDate">End Date</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('language')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.language">Language</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('file')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.file">File</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('date')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.date">Date</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('duration')}>
+                  <Translate contentKey="demoJhReact973App.jobHistory.duration">Duration</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th>
+                  <Translate contentKey="demoJhReact973App.jobHistory.job">Job</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th>
+                  <Translate contentKey="demoJhReact973App.jobHistory.department">Department</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th>
+                  <Translate contentKey="demoJhReact973App.jobHistory.employee">Employee</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {jobHistoryList.map((jobHistory, i) => (
+                <tr key={`entity-${i}`} data-cy="entityTable">
+                  <td>
+                    <Button tag={Link} to={`/job-history/${jobHistory.id}`} color="link" size="sm">
+                      {jobHistory.id}
+                    </Button>
+                  </td>
+                  <td>{jobHistory.startDate ? <TextFormat type="date" value={jobHistory.startDate} format={APP_DATE_FORMAT} /> : null}</td>
+                  <td>{jobHistory.endDate ? <TextFormat type="date" value={jobHistory.endDate} format={APP_DATE_FORMAT} /> : null}</td>
+                  <td>
+                    <Translate contentKey={`demoJhReact973App.Language.${jobHistory.language}`} />
+                  </td>
+                  <td>
+                    {jobHistory.file ? (
+                      <div>
+                        {jobHistory.fileContentType ? (
+                          <a onClick={openFile(jobHistory.fileContentType, jobHistory.file)}>
+                            <Translate contentKey="entity.action.open">Open</Translate>
+                            &nbsp;
+                          </a>
+                        ) : null}
+                        <span>
+                          {jobHistory.fileContentType}, {byteSize(jobHistory.file)}
+                        </span>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          ) : (
-            !loading && (
-              <div className="alert alert-warning">
-                <Translate contentKey="demoJhReact973App.jobHistory.home.notFound">No Job Histories found</Translate>
-              </div>
-            )
-          )}
-        </InfiniteScroll>
+                    ) : null}
+                  </td>
+                  <td>{jobHistory.date ? <TextFormat type="date" value={jobHistory.date} format={APP_DATE_FORMAT} /> : null}</td>
+                  <td>{jobHistory.duration ? <DurationFormat value={jobHistory.duration} /> : null}</td>
+                  <td>{jobHistory.job ? <Link to={`/job/${jobHistory.job.id}`}>{jobHistory.job.id}</Link> : ''}</td>
+                  <td>
+                    {jobHistory.department ? <Link to={`/department/${jobHistory.department.id}`}>{jobHistory.department.id}</Link> : ''}
+                  </td>
+                  <td>{jobHistory.employee ? <Link to={`/employee/${jobHistory.employee.id}`}>{jobHistory.employee.id}</Link> : ''}</td>
+                  <td className="text-end">
+                    <div className="btn-group flex-btn-group-container">
+                      <Button tag={Link} to={`/job-history/${jobHistory.id}`} color="info" size="sm" data-cy="entityDetailsButton">
+                        <FontAwesomeIcon icon="eye" />{' '}
+                        <span className="d-none d-md-inline">
+                          <Translate contentKey="entity.action.view">View</Translate>
+                        </span>
+                      </Button>
+                      <Button
+                        tag={Link}
+                        to={`/job-history/${jobHistory.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                        color="primary"
+                        size="sm"
+                        data-cy="entityEditButton"
+                      >
+                        <FontAwesomeIcon icon="pencil-alt" />{' '}
+                        <span className="d-none d-md-inline">
+                          <Translate contentKey="entity.action.edit">Edit</Translate>
+                        </span>
+                      </Button>
+                      <Button
+                        tag={Link}
+                        to={`/job-history/${jobHistory.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
+                        color="danger"
+                        size="sm"
+                        data-cy="entityDeleteButton"
+                      >
+                        <FontAwesomeIcon icon="trash" />{' '}
+                        <span className="d-none d-md-inline">
+                          <Translate contentKey="entity.action.delete">Delete</Translate>
+                        </span>
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          !loading && (
+            <div className="alert alert-warning">
+              <Translate contentKey="demoJhReact973App.jobHistory.home.notFound">No Job Histories found</Translate>
+            </div>
+          )
+        )}
       </div>
+      {totalItems ? (
+        <div className={jobHistoryList && jobHistoryList.length > 0 ? '' : 'd-none'}>
+          <div className="justify-content-center d-flex">
+            <JhiItemCount page={paginationState.activePage} total={totalItems} itemsPerPage={paginationState.itemsPerPage} i18nEnabled />
+          </div>
+          <div className="justify-content-center d-flex">
+            <JhiPagination
+              activePage={paginationState.activePage}
+              onSelect={handlePagination}
+              maxButtons={5}
+              itemsPerPage={paginationState.itemsPerPage}
+              totalItems={totalItems}
+            />
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
     </div>
   );
 };

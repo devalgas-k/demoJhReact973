@@ -13,6 +13,7 @@ import {
   waitUntilCount,
   isVisible,
 } from '../../util/utils';
+import path from 'path';
 
 const expect = chai.expect;
 

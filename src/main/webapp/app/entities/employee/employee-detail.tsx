@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, UncontrolledTooltip, Row, Col } from 'reactstrap';
-import { Translate, TextFormat } from 'react-jhipster';
+import { Translate, openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
@@ -77,6 +77,37 @@ export const EmployeeDetail = () => {
             </span>
           </dt>
           <dd>{employeeEntity.commissionPct}</dd>
+          <dt>
+            <span id="level">
+              <Translate contentKey="demoJhReact973App.employee.level">Level</Translate>
+            </span>
+          </dt>
+          <dd>{employeeEntity.level}</dd>
+          <dt>
+            <span id="contract">
+              <Translate contentKey="demoJhReact973App.employee.contract">Contract</Translate>
+            </span>
+          </dt>
+          <dd>{employeeEntity.contract}</dd>
+          <dt>
+            <span id="cv">
+              <Translate contentKey="demoJhReact973App.employee.cv">Cv</Translate>
+            </span>
+          </dt>
+          <dd>
+            {employeeEntity.cv ? (
+              <div>
+                {employeeEntity.cvContentType ? (
+                  <a onClick={openFile(employeeEntity.cvContentType, employeeEntity.cv)}>
+                    <Translate contentKey="entity.action.open">Open</Translate>&nbsp;
+                  </a>
+                ) : null}
+                <span>
+                  {employeeEntity.cvContentType}, {byteSize(employeeEntity.cv)}
+                </span>
+              </div>
+            ) : null}
+          </dd>
           <dt>
             <Translate contentKey="demoJhReact973App.employee.manager">Manager</Translate>
           </dt>

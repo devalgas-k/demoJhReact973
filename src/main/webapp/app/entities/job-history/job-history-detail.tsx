@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, TextFormat } from 'react-jhipster';
+import { Translate, openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
+import { DurationFormat } from 'app/shared/DurationFormat';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './job-history.reducer';
@@ -52,6 +53,39 @@ export const JobHistoryDetail = () => {
             </span>
           </dt>
           <dd>{jobHistoryEntity.language}</dd>
+          <dt>
+            <span id="file">
+              <Translate contentKey="demoJhReact973App.jobHistory.file">File</Translate>
+            </span>
+          </dt>
+          <dd>
+            {jobHistoryEntity.file ? (
+              <div>
+                {jobHistoryEntity.fileContentType ? (
+                  <a onClick={openFile(jobHistoryEntity.fileContentType, jobHistoryEntity.file)}>
+                    <Translate contentKey="entity.action.open">Open</Translate>&nbsp;
+                  </a>
+                ) : null}
+                <span>
+                  {jobHistoryEntity.fileContentType}, {byteSize(jobHistoryEntity.file)}
+                </span>
+              </div>
+            ) : null}
+          </dd>
+          <dt>
+            <span id="date">
+              <Translate contentKey="demoJhReact973App.jobHistory.date">Date</Translate>
+            </span>
+          </dt>
+          <dd>{jobHistoryEntity.date ? <TextFormat value={jobHistoryEntity.date} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
+          <dt>
+            <span id="duration">
+              <Translate contentKey="demoJhReact973App.jobHistory.duration">Duration</Translate>
+            </span>
+          </dt>
+          <dd>
+            {jobHistoryEntity.duration ? <DurationFormat value={jobHistoryEntity.duration} /> : null} ({jobHistoryEntity.duration})
+          </dd>
           <dt>
             <Translate contentKey="demoJhReact973App.jobHistory.job">Job</Translate>
           </dt>

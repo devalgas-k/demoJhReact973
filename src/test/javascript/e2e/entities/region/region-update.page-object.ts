@@ -35,7 +35,7 @@ export default class RegionUpdatePage {
 
   async enterData() {
     await waitUntilDisplayed(this.saveButton);
-    await this.setRegionNameInput('regionName');
+    await this.setRegionNameInput('Mixk3');
     await this.save();
     await waitUntilHidden(this.saveButton);
   }

@@ -25,7 +25,7 @@ export const RegionUpdate = () => {
   const updateSuccess = useAppSelector(state => state.region.updateSuccess);
 
   const handleClose = () => {
-    navigate('/region');
+    navigate('/region' + location.search);
   };
 
   useEffect(() => {
@@ -93,6 +93,9 @@ export const RegionUpdate = () => {
                 name="regionName"
                 data-cy="regionName"
                 type="text"
+                validate={{
+                  pattern: { value: /^[A-Z][a-z]+\d$/, message: translate('entity.validation.pattern', { pattern: '^[A-Z][a-z]+\\d$' }) },
+                }}
               />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/region" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />

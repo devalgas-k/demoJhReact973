@@ -25,7 +25,7 @@ export const EmployeeDeleteDialog = () => {
   const updateSuccess = useAppSelector(state => state.employee.updateSuccess);
 
   const handleClose = () => {
-    navigate('/employee');
+    navigate('/employee' + location.search);
   };
 
   useEffect(() => {

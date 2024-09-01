@@ -168,6 +168,14 @@ describe('JobHistory e2e test', () => {
 
       cy.get(`[data-cy="language"]`).select('SPANISH');
 
+      cy.setFieldImageAsBytesOfEntity('file', 'integration-test.png', 'image/png');
+
+      cy.get(`[data-cy="date"]`).type('2024-08-31T22:12').blur().should('have.value', '2024-08-31T22:12');
+
+      cy.get(`[data-cy="duration"]`).type('PT45M').blur().should('have.value', 'PT45M');
+
+      // since cypress clicks submit too fast before the blob fields are validated
+      cy.wait(200); // eslint-disable-line cypress/no-unnecessary-waiting
       cy.get(entityCreateSaveButtonSelector).click();
 
       cy.wait('@postEntityRequest').then(({ response }) => {

@@ -1,8 +1,12 @@
 import { element, by, ElementFinder, protractor } from 'protractor';
 import { waitUntilDisplayed, waitUntilHidden, isVisible } from '../../util/utils';
 
+import path from 'path';
+
 const expect = chai.expect;
 
+const fileToUpload = '../../../../../../src/main/webapp/content/images/logo-jhipster.png';
+const absolutePath = path.resolve(__dirname, fileToUpload);
 export default class EmployeeUpdatePage {
   pageTitle: ElementFinder = element(by.id('demoJhReact973App.employee.home.createOrEditLabel'));
   saveButton: ElementFinder = element(by.id('save-entity'));
@@ -14,6 +18,9 @@ export default class EmployeeUpdatePage {
   hireDateInput: ElementFinder = element(by.css('input#employee-hireDate'));
   salaryInput: ElementFinder = element(by.css('input#employee-salary'));
   commissionPctInput: ElementFinder = element(by.css('input#employee-commissionPct'));
+  levelInput: ElementFinder = element(by.css('input#employee-level'));
+  contractSelect: ElementFinder = element(by.css('select#employee-contract'));
+  cvInput: ElementFinder = element(by.css('input#employee-cv'));
   managerSelect: ElementFinder = element(by.css('select#employee-manager'));
   departmentSelect: ElementFinder = element(by.css('select#employee-department'));
 
@@ -77,6 +84,33 @@ export default class EmployeeUpdatePage {
     return this.commissionPctInput.getAttribute('value');
   }
 
+  async setLevelInput(level) {
+    await this.levelInput.sendKeys(level);
+  }
+
+  async getLevelInput() {
+    return this.levelInput.getAttribute('value');
+  }
+
+  async setContractSelect(contract) {
+    await this.contractSelect.sendKeys(contract);
+  }
+
+  async getContractSelect() {
+    return this.contractSelect.element(by.css('option:checked')).getText();
+  }
+
+  async contractSelectLastOption() {
+    await this.contractSelect.all(by.tagName('option')).last().click();
+  }
+  async setCvInput(cv) {
+    await this.cvInput.sendKeys(cv);
+  }
+
+  async getCvInput() {
+    return this.cvInput.getAttribute('value');
+  }
+
   async managerSelectLastOption() {
     await this.managerSelect.all(by.tagName('option')).last().click();
   }
@@ -127,7 +161,7 @@ export default class EmployeeUpdatePage {
     await waitUntilDisplayed(this.saveButton);
     await this.setLastNameInput('lastName');
     await waitUntilDisplayed(this.saveButton);
-    await this.setEmailInput('email');
+    await this.setEmailInput('l@8RG.e');
     await waitUntilDisplayed(this.saveButton);
     await this.setPhoneNumberInput('phoneNumber');
     await waitUntilDisplayed(this.saveButton);
@@ -136,6 +170,12 @@ export default class EmployeeUpdatePage {
     await this.setSalaryInput('5');
     await waitUntilDisplayed(this.saveButton);
     await this.setCommissionPctInput('5');
+    await waitUntilDisplayed(this.saveButton);
+    await this.setLevelInput('5');
+    await waitUntilDisplayed(this.saveButton);
+    await this.contractSelectLastOption();
+    await waitUntilDisplayed(this.saveButton);
+    await this.setCvInput(absolutePath);
     await this.managerSelectLastOption();
     await this.departmentSelectLastOption();
     await this.save();

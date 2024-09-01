@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Row, Col, FormText, UncontrolledTooltip } from 'reactstrap';
-import { isNumber, Translate, translate, ValidatedField, ValidatedForm } from 'react-jhipster';
+import { isNumber, Translate, translate, ValidatedField, ValidatedForm, ValidatedBlobField } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
@@ -12,6 +12,7 @@ import { getEntities as getEmployees } from 'app/entities/employee/employee.redu
 import { IDepartment } from 'app/shared/model/department.model';
 import { getEntities as getDepartments } from 'app/entities/department/department.reducer';
 import { IEmployee } from 'app/shared/model/employee.model';
+import { Contract } from 'app/shared/model/enumerations/contract.model';
 import { getEntity, updateEntity, createEntity, reset } from './employee.reducer';
 
 export const EmployeeUpdate = () => {
@@ -28,13 +29,16 @@ export const EmployeeUpdate = () => {
   const loading = useAppSelector(state => state.employee.loading);
   const updating = useAppSelector(state => state.employee.updating);
   const updateSuccess = useAppSelector(state => state.employee.updateSuccess);
+  const contractValues = Object.keys(Contract);
 
   const handleClose = () => {
-    navigate('/employee');
+    navigate('/employee' + location.search);
   };
 
   useEffect(() => {
-    if (!isNew) {
+    if (isNew) {
+      dispatch(reset());
+    } else {
       dispatch(getEntity(id));
     }
 
@@ -71,6 +75,7 @@ export const EmployeeUpdate = () => {
           hireDate: displayDefaultDateTime(),
         }
       : {
+          contract: 'CDI',
           ...employeeEntity,
           hireDate: convertDateTimeFromServer(employeeEntity.hireDate),
           manager: employeeEntity?.manager?.id,
@@ -125,6 +130,13 @@ export const EmployeeUpdate = () => {
                 name="email"
                 data-cy="email"
                 type="text"
+                validate={{
+                  required: { value: true, message: translate('entity.validation.required') },
+                  pattern: {
+                    value: /^[^@\s]+@[^@\s]+\.[^@\s]+$/,
+                    message: translate('entity.validation.pattern', { pattern: '^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$' }),
+                  },
+                }}
               />
               <ValidatedField
                 label={translate('demoJhReact973App.employee.phoneNumber')}
@@ -154,6 +166,38 @@ export const EmployeeUpdate = () => {
                 name="commissionPct"
                 data-cy="commissionPct"
                 type="text"
+              />
+              <ValidatedField
+                label={translate('demoJhReact973App.employee.level')}
+                id="employee-level"
+                name="level"
+                data-cy="level"
+                type="text"
+                validate={{
+                  min: { value: 1, message: translate('entity.validation.min', { min: 1 }) },
+                  max: { value: 14, message: translate('entity.validation.max', { max: 14 }) },
+                  validate: v => isNumber(v) || translate('entity.validation.number'),
+                }}
+              />
+              <ValidatedField
+                label={translate('demoJhReact973App.employee.contract')}
+                id="employee-contract"
+                name="contract"
+                data-cy="contract"
+                type="select"
+              >
+                {contractValues.map(contract => (
+                  <option value={contract} key={contract}>
+                    {translate('demoJhReact973App.Contract.' + contract)}
+                  </option>
+                ))}
+              </ValidatedField>
+              <ValidatedBlobField
+                label={translate('demoJhReact973App.employee.cv')}
+                id="employee-cv"
+                name="cv"
+                data-cy="cv"
+                openActionLabel={translate('entity.action.open')}
               />
               <ValidatedField
                 id="employee-manager"

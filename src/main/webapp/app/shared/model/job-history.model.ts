@@ -9,6 +9,10 @@ export interface IJobHistory {
   startDate?: string | null;
   endDate?: string | null;
   language?: Language | null;
+  fileContentType?: string | null;
+  file?: string | null;
+  date?: string | null;
+  duration?: string | null;
   job?: IJob | null;
   department?: IDepartment | null;
   employee?: IEmployee | null;

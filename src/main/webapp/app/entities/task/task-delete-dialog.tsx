@@ -25,7 +25,7 @@ export const TaskDeleteDialog = () => {
   const updateSuccess = useAppSelector(state => state.task.updateSuccess);
 
   const handleClose = () => {
-    navigate('/task');
+    navigate('/task' + location.search);
   };
 
   useEffect(() => {

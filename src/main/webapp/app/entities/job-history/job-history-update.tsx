@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Row, Col, FormText } from 'reactstrap';
-import { isNumber, Translate, translate, ValidatedField, ValidatedForm } from 'react-jhipster';
+import { isNumber, Translate, translate, ValidatedField, ValidatedForm, ValidatedBlobField } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
@@ -36,11 +36,13 @@ export const JobHistoryUpdate = () => {
   const languageValues = Object.keys(Language);
 
   const handleClose = () => {
-    navigate('/job-history');
+    navigate('/job-history' + location.search);
   };
 
   useEffect(() => {
-    if (!isNew) {
+    if (isNew) {
+      dispatch(reset());
+    } else {
       dispatch(getEntity(id));
     }
 
@@ -58,6 +60,7 @@ export const JobHistoryUpdate = () => {
   const saveEntity = values => {
     values.startDate = convertDateTimeToServer(values.startDate);
     values.endDate = convertDateTimeToServer(values.endDate);
+    values.date = convertDateTimeToServer(values.date);
 
     const entity = {
       ...jobHistoryEntity,
@@ -79,12 +82,14 @@ export const JobHistoryUpdate = () => {
       ? {
           startDate: displayDefaultDateTime(),
           endDate: displayDefaultDateTime(),
+          date: displayDefaultDateTime(),
         }
       : {
           language: 'FRENCH',
           ...jobHistoryEntity,
           startDate: convertDateTimeFromServer(jobHistoryEntity.startDate),
           endDate: convertDateTimeFromServer(jobHistoryEntity.endDate),
+          date: convertDateTimeFromServer(jobHistoryEntity.date),
           job: jobHistoryEntity?.job?.id,
           department: jobHistoryEntity?.department?.id,
           employee: jobHistoryEntity?.employee?.id,
@@ -144,6 +149,28 @@ export const JobHistoryUpdate = () => {
                   </option>
                 ))}
               </ValidatedField>
+              <ValidatedBlobField
+                label={translate('demoJhReact973App.jobHistory.file')}
+                id="job-history-file"
+                name="file"
+                data-cy="file"
+                openActionLabel={translate('entity.action.open')}
+              />
+              <ValidatedField
+                label={translate('demoJhReact973App.jobHistory.date')}
+                id="job-history-date"
+                name="date"
+                data-cy="date"
+                type="datetime-local"
+                placeholder="YYYY-MM-DD HH:mm"
+              />
+              <ValidatedField
+                label={translate('demoJhReact973App.jobHistory.duration')}
+                id="job-history-duration"
+                name="duration"
+                data-cy="duration"
+                type="text"
+              />
               <ValidatedField
                 id="job-history-job"
                 name="job"

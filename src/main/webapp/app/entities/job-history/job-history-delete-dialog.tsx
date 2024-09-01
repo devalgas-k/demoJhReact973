@@ -25,7 +25,7 @@ export const JobHistoryDeleteDialog = () => {
   const updateSuccess = useAppSelector(state => state.jobHistory.updateSuccess);
 
   const handleClose = () => {
-    navigate('/job-history');
+    navigate('/job-history' + location.search);
   };
 
   useEffect(() => {

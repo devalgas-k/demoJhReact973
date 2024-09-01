@@ -1,0 +1,10 @@
+{
+  "demoJhReact973App": {
+    "Contract": {
+      "null": "",
+      "CDI": "Permanent contract",
+      "CDD": "Fixed-term contract",
+      "FREELANCE": "Freelance"
+    }
+  }
+}

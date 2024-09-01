@@ -8,7 +8,7 @@ export default class TaskUpdatePage {
   saveButton: ElementFinder = element(by.id('save-entity'));
   cancelButton: ElementFinder = element(by.id('cancel-save'));
   titleInput: ElementFinder = element(by.css('input#task-title'));
-  descriptionInput: ElementFinder = element(by.css('input#task-description'));
+  descriptionInput: ElementFinder = element(by.css('textarea#task-description'));
 
   getPageTitle() {
     return this.pageTitle;
@@ -44,7 +44,7 @@ export default class TaskUpdatePage {
 
   async enterData() {
     await waitUntilDisplayed(this.saveButton);
-    await this.setTitleInput('title');
+    await this.setTitleInput('Ul');
     await waitUntilDisplayed(this.saveButton);
     await this.setDescriptionInput('description');
     await this.save();

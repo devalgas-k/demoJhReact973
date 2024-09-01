@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Row, Col, FormText } from 'reactstrap';
-import { isNumber, Translate, translate, ValidatedField, ValidatedForm } from 'react-jhipster';
+import { isNumber, Translate, translate, ValidatedField, ValidatedForm, ValidatedBlobField } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
@@ -106,6 +106,9 @@ export const JobUpdate = () => {
                 name="jobTitle"
                 data-cy="jobTitle"
                 type="text"
+                validate={{
+                  required: { value: true, message: translate('entity.validation.required') },
+                }}
               />
               <ValidatedField
                 label={translate('demoJhReact973App.job.minSalary')}
@@ -120,6 +123,39 @@ export const JobUpdate = () => {
                 name="maxSalary"
                 data-cy="maxSalary"
                 type="text"
+              />
+              <ValidatedField
+                label={translate('demoJhReact973App.job.subSalary')}
+                id="job-subSalary"
+                name="subSalary"
+                data-cy="subSalary"
+                type="text"
+              />
+              <ValidatedField
+                label={translate('demoJhReact973App.job.totalSalary')}
+                id="job-totalSalary"
+                name="totalSalary"
+                data-cy="totalSalary"
+                type="text"
+              />
+              <ValidatedField label={translate('demoJhReact973App.job.date')} id="job-date" name="date" data-cy="date" type="date" />
+              <ValidatedField
+                label={translate('demoJhReact973App.job.codeCode')}
+                id="job-codeCode"
+                name="codeCode"
+                data-cy="codeCode"
+                type="text"
+              />
+              <ValidatedBlobField
+                label={translate('demoJhReact973App.job.profil')}
+                id="job-profil"
+                name="profil"
+                data-cy="profil"
+                isImage
+                accept="image/*"
+                validate={{
+                  required: { value: true, message: translate('entity.validation.required') },
+                }}
               />
               <ValidatedField
                 label={translate('demoJhReact973App.job.task')}

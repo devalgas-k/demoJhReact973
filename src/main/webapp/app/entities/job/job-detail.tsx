@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate } from 'react-jhipster';
+import { Translate, openFile, byteSize, TextFormat } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
@@ -50,6 +50,49 @@ export const JobDetail = () => {
             </span>
           </dt>
           <dd>{jobEntity.maxSalary}</dd>
+          <dt>
+            <span id="subSalary">
+              <Translate contentKey="demoJhReact973App.job.subSalary">Sub Salary</Translate>
+            </span>
+          </dt>
+          <dd>{jobEntity.subSalary}</dd>
+          <dt>
+            <span id="totalSalary">
+              <Translate contentKey="demoJhReact973App.job.totalSalary">Total Salary</Translate>
+            </span>
+          </dt>
+          <dd>{jobEntity.totalSalary}</dd>
+          <dt>
+            <span id="date">
+              <Translate contentKey="demoJhReact973App.job.date">Date</Translate>
+            </span>
+          </dt>
+          <dd>{jobEntity.date ? <TextFormat value={jobEntity.date} type="date" format={APP_LOCAL_DATE_FORMAT} /> : null}</dd>
+          <dt>
+            <span id="codeCode">
+              <Translate contentKey="demoJhReact973App.job.codeCode">Code Code</Translate>
+            </span>
+          </dt>
+          <dd>{jobEntity.codeCode}</dd>
+          <dt>
+            <span id="profil">
+              <Translate contentKey="demoJhReact973App.job.profil">Profil</Translate>
+            </span>
+          </dt>
+          <dd>
+            {jobEntity.profil ? (
+              <div>
+                {jobEntity.profilContentType ? (
+                  <a onClick={openFile(jobEntity.profilContentType, jobEntity.profil)}>
+                    <img src={`data:${jobEntity.profilContentType};base64,${jobEntity.profil}`} style={{ maxHeight: '30px' }} />
+                  </a>
+                ) : null}
+                <span>
+                  {jobEntity.profilContentType}, {byteSize(jobEntity.profil)}
+                </span>
+              </div>
+            ) : null}
+          </dd>
           <dt>
             <Translate contentKey="demoJhReact973App.job.task">Task</Translate>
           </dt>

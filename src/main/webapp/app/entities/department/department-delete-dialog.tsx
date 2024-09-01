@@ -25,7 +25,7 @@ export const DepartmentDeleteDialog = () => {
   const updateSuccess = useAppSelector(state => state.department.updateSuccess);
 
   const handleClose = () => {
-    navigate('/department');
+    navigate('/department' + location.search);
   };
 
   useEffect(() => {

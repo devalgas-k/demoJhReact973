@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { Translate, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { openFile, byteSize, Translate, TextFormat, getSortState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
@@ -114,6 +114,21 @@ export const Job = () => {
                 <th className="hand" onClick={sort('maxSalary')}>
                   <Translate contentKey="demoJhReact973App.job.maxSalary">Max Salary</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('subSalary')}>
+                  <Translate contentKey="demoJhReact973App.job.subSalary">Sub Salary</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('totalSalary')}>
+                  <Translate contentKey="demoJhReact973App.job.totalSalary">Total Salary</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('date')}>
+                  <Translate contentKey="demoJhReact973App.job.date">Date</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('codeCode')}>
+                  <Translate contentKey="demoJhReact973App.job.codeCode">Code Code</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('profil')}>
+                  <Translate contentKey="demoJhReact973App.job.profil">Profil</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th>
                   <Translate contentKey="demoJhReact973App.job.employee">Employee</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
@@ -131,6 +146,25 @@ export const Job = () => {
                   <td>{job.jobTitle}</td>
                   <td>{job.minSalary}</td>
                   <td>{job.maxSalary}</td>
+                  <td>{job.subSalary}</td>
+                  <td>{job.totalSalary}</td>
+                  <td>{job.date ? <TextFormat type="date" value={job.date} format={APP_LOCAL_DATE_FORMAT} /> : null}</td>
+                  <td>{job.codeCode}</td>
+                  <td>
+                    {job.profil ? (
+                      <div>
+                        {job.profilContentType ? (
+                          <a onClick={openFile(job.profilContentType, job.profil)}>
+                            <img src={`data:${job.profilContentType};base64,${job.profil}`} style={{ maxHeight: '30px' }} />
+                            &nbsp;
+                          </a>
+                        ) : null}
+                        <span>
+                          {job.profilContentType}, {byteSize(job.profil)}
+                        </span>
+                      </div>
+                    ) : null}
+                  </td>
                   <td>{job.employee ? <Link to={`/employee/${job.employee.id}`}>{job.employee.id}</Link> : ''}</td>
                   <td className="text-end">
                     <div className="btn-group flex-btn-group-container">

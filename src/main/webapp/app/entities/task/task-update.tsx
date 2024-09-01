@@ -28,7 +28,7 @@ export const TaskUpdate = () => {
   const updateSuccess = useAppSelector(state => state.task.updateSuccess);
 
   const handleClose = () => {
-    navigate('/task');
+    navigate('/task' + location.search);
   };
 
   useEffect(() => {
@@ -92,13 +92,24 @@ export const TaskUpdate = () => {
                   validate={{ required: true }}
                 />
               ) : null}
-              <ValidatedField label={translate('demoJhReact973App.task.title')} id="task-title" name="title" data-cy="title" type="text" />
+              <ValidatedField
+                label={translate('demoJhReact973App.task.title')}
+                id="task-title"
+                name="title"
+                data-cy="title"
+                type="text"
+                validate={{
+                  required: { value: true, message: translate('entity.validation.required') },
+                  maxLength: { value: 256, message: translate('entity.validation.maxlength', { max: 256 }) },
+                  pattern: { value: /^[A-Z].*$/, message: translate('entity.validation.pattern', { pattern: '^[A-Z].*$' }) },
+                }}
+              />
               <ValidatedField
                 label={translate('demoJhReact973App.task.description')}
                 id="task-description"
                 name="description"
                 data-cy="description"
-                type="text"
+                type="textarea"
               />
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/task" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
